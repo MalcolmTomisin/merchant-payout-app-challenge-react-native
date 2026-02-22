@@ -1,9 +1,4 @@
-import {
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, ActivityIndicator, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { TransactionRow } from "@/components/transaction-row";
