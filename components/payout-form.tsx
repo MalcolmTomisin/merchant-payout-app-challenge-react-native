@@ -14,7 +14,6 @@ import {
   View,
 } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { Currency } from '@/types/api';
 
