@@ -44,6 +44,7 @@ export default function ModalScreen() {
     return (
       <View style={styles.footer}>
         <ActivityIndicator size="small" color={tint} testID="pagination-loader" />
+        <ThemedText style={styles.loadingMoreText}>Loading more...</ThemedText>
       </View>
     );
   };
@@ -112,5 +113,10 @@ const styles = StyleSheet.create({
   footer: {
     paddingVertical: 20,
     alignItems: 'center',
+  },
+  loadingMoreText: {
+    marginTop: 8,
+    fontSize: 14,
+    opacity: 0.6,
   },
 });
