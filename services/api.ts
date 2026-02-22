@@ -3,7 +3,12 @@
  * Pure async functions wrapping fetch calls to the merchant API
  */
 import { API_BASE_URL } from '@/constants';
-import type { MerchantDataResponse, PaginatedActivityResponse } from '@/types/api';
+import type {
+  MerchantDataResponse,
+  PaginatedActivityResponse,
+  CreatePayoutRequest,
+  PayoutResponse,
+} from '@/types/api';
 
 /**
  * Fetch merchant overview data (balance + recent activity)
@@ -35,6 +40,26 @@ export async function fetchPaginatedActivity(
 
   if (!response.ok) {
     throw new Error(`Failed to fetch activity: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Create a payout to a bank account
+ * Amount should be in the lowest denomination (pence/cents)
+ */
+export async function createPayout(request: CreatePayoutRequest): Promise<PayoutResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/payouts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    const message = body?.error ?? `Payout failed: ${response.status}`;
+    throw new Error(message);
   }
 
   return response.json();
