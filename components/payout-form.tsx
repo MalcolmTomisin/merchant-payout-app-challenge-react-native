@@ -2,7 +2,6 @@
  * PayoutForm — form for initiating a payout with amount, currency, and IBAN fields.
  * Validates inputs and calls onSubmit with the parsed form data.
  */
-import { useCallback, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -12,12 +11,12 @@ import {
   StyleSheet,
   TextInput,
   View,
-} from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { useThemeColor } from '@/hooks/use-theme-color';
-import type { Currency } from '@/types/api';
+} from "react-native";
+import { ThemedText } from "@/components/themed-text";
+import { usePayoutForm } from "@/hooks/use-payout-form";
+import type { Currency } from "@/types/api";
 
-const CURRENCIES: Currency[] = ['GBP', 'EUR'];
+const CURRENCIES: Currency[] = ["GBP", "EUR"];
 
 interface PayoutFormData {
   /** Amount in lowest denomination (pence/cents) */
@@ -31,35 +30,29 @@ interface PayoutFormProps {
 }
 
 export function PayoutForm({ onSubmit }: PayoutFormProps) {
-  const [amount, setAmount] = useState('');
-  const [currency, setCurrency] = useState<Currency>('GBP');
-  const [iban, setIban] = useState('');
-  const [showCurrencyPicker, setShowCurrencyPicker] = useState(false);
-
-  const textColor = useThemeColor({}, 'text');
-  const borderColor = useThemeColor({ light: '#E0E0E0', dark: '#3A3A3C' }, 'icon');
-  const placeholderColor = useThemeColor({ light: '#9CA3AF', dark: '#6B7280' }, 'icon');
-  const inputBg = useThemeColor({ light: '#fff', dark: '#1C1E21' }, 'background');
-
-  const parsedAmount = parseFloat(amount);
-  const isValid = !isNaN(parsedAmount) && parsedAmount > 0 && iban.trim().length > 0;
-
-  const handleSubmit = useCallback(() => {
-    if (!isValid) return;
-    const amountInPence = Math.round(parsedAmount * 100);
-    onSubmit({ amount: amountInPence, currency, iban: iban.trim() });
-  }, [isValid, parsedAmount, currency, iban, onSubmit]);
-
-  const handleSelectCurrency = useCallback((selected: Currency) => {
-    setCurrency(selected);
-    setShowCurrencyPicker(false);
-  }, []);
+  const {
+    amount,
+    currency,
+    iban,
+    showCurrencyPicker,
+    setAmount,
+    setIban,
+    isValid,
+    textColor,
+    borderColor,
+    placeholderColor,
+    inputBg,
+    handleSubmit,
+    handleSelectCurrency,
+    openCurrencyPicker,
+    closeCurrencyPicker,
+  } = usePayoutForm(onSubmit);
 
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -97,14 +90,22 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
               Currency
             </ThemedText>
             <Pressable
-              style={[styles.input, styles.currencyPicker, { borderColor, backgroundColor: inputBg }]}
-              onPress={() => setShowCurrencyPicker(true)}
+              style={[
+                styles.input,
+                styles.currencyPicker,
+                { borderColor, backgroundColor: inputBg },
+              ]}
+              onPress={openCurrencyPicker}
               accessibilityRole="button"
               accessibilityLabel={`Currency: ${currency}. Tap to change.`}
               testID="currency-picker"
             >
               <ThemedText style={styles.currencyText}>{currency}</ThemedText>
-              <ThemedText lightColor="#687076" darkColor="#9BA1A6" style={styles.chevron}>
+              <ThemedText
+                lightColor="#687076"
+                darkColor="#9BA1A6"
+                style={styles.chevron}
+              >
                 ▼
               </ThemedText>
             </Pressable>
@@ -135,14 +136,20 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
             accessibilityLabel="Destination IBAN"
             testID="iban-input"
           />
-          <ThemedText lightColor="#687076" darkColor="#9BA1A6" style={styles.helperText}>
+          <ThemedText
+            lightColor="#687076"
+            darkColor="#9BA1A6"
+            style={styles.helperText}
+          >
             Enter the destination bank account IBAN
           </ThemedText>
         </View>
 
-        {/* Confirm button */}
         <Pressable
-          style={[styles.confirmButton, !isValid && styles.confirmButtonDisabled]}
+          style={[
+            styles.confirmButton,
+            !isValid && styles.confirmButtonDisabled,
+          ]}
           onPress={handleSubmit}
           disabled={!isValid}
           accessibilityRole="button"
@@ -165,11 +172,11 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
         visible={showCurrencyPicker}
         transparent
         animationType="fade"
-        onRequestClose={() => setShowCurrencyPicker(false)}
+        onRequestClose={closeCurrencyPicker}
       >
         <Pressable
           style={styles.pickerOverlay}
-          onPress={() => setShowCurrencyPicker(false)}
+          onPress={closeCurrencyPicker}
         >
           <View style={styles.pickerCard}>
             <ThemedText
@@ -193,8 +200,8 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
                 testID={`currency-option-${c}`}
               >
                 <ThemedText
-                  lightColor={c === currency ? '#0a7ea4' : '#11181C'}
-                  darkColor={c === currency ? '#0a7ea4' : '#11181C'}
+                  lightColor={c === currency ? "#0a7ea4" : "#11181C"}
+                  darkColor={c === currency ? "#0a7ea4" : "#11181C"}
                   style={[
                     styles.pickerOptionText,
                     c === currency && styles.pickerOptionTextSelected,
@@ -212,7 +219,7 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
 }
 
 /** Reset form fields externally via ref — or parent can just re-mount */
-PayoutForm.displayName = 'PayoutForm';
+PayoutForm.displayName = "PayoutForm";
 
 const styles = StyleSheet.create({
   flex: {
@@ -223,7 +230,7 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   amountRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: 24,
   },
@@ -244,13 +251,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   currencyPicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   currencyText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   chevron: {
     fontSize: 12,
@@ -264,35 +271,35 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   confirmButton: {
-    backgroundColor: '#0a7ea4',
+    backgroundColor: "#0a7ea4",
     paddingVertical: 18,
     borderRadius: 12,
-    alignItems: 'center',
+    alignItems: "center",
   },
   confirmButtonDisabled: {
-    backgroundColor: '#D1D5DB',
+    backgroundColor: "#D1D5DB",
   },
   confirmButtonText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   // Currency picker modal
   pickerOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   pickerCard: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
-    width: '100%',
+    width: "100%",
     maxWidth: 300,
   },
   pickerTitle: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 16,
     fontSize: 18,
   },
@@ -302,13 +309,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   pickerOptionSelected: {
-    backgroundColor: '#E8F4F8',
+    backgroundColor: "#E8F4F8",
   },
   pickerOptionText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   pickerOptionTextSelected: {
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
