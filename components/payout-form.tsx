@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { usePayoutForm } from "@/hooks/use-payout-form";
+import { useModal } from "@/hooks/use-modal";
+import { useFormInputColors } from "@/hooks/use-form-input-colors";
 import type { Currency } from "@/types/api";
 
 const CURRENCIES: Currency[] = ["GBP", "EUR"];
@@ -34,19 +36,21 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
     amount,
     currency,
     iban,
-    showCurrencyPicker,
     setAmount,
+    setCurrency,
     setIban,
     isValid,
-    textColor,
-    borderColor,
-    placeholderColor,
-    inputBg,
     handleSubmit,
-    handleSelectCurrency,
-    openCurrencyPicker,
-    closeCurrencyPicker,
   } = usePayoutForm(onSubmit);
+
+  const currencyPicker = useModal();
+  const { textColor, borderColor, placeholderColor, inputBg } =
+    useFormInputColors();
+
+  const handleSelectCurrency = (selected: Currency) => {
+    setCurrency(selected);
+    currencyPicker.close();
+  };
 
   return (
     <KeyboardAvoidingView
@@ -95,7 +99,7 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
                 styles.currencyPicker,
                 { borderColor, backgroundColor: inputBg },
               ]}
-              onPress={openCurrencyPicker}
+              onPress={currencyPicker.open}
               accessibilityRole="button"
               accessibilityLabel={`Currency: ${currency}. Tap to change.`}
               testID="currency-picker"
@@ -169,14 +173,14 @@ export function PayoutForm({ onSubmit }: PayoutFormProps) {
 
       {/* Currency picker modal */}
       <Modal
-        visible={showCurrencyPicker}
+        visible={currencyPicker.visible}
         transparent
         animationType="fade"
-        onRequestClose={closeCurrencyPicker}
+        onRequestClose={currencyPicker.close}
       >
         <Pressable
           style={styles.pickerOverlay}
-          onPress={closeCurrencyPicker}
+          onPress={currencyPicker.close}
         >
           <View style={styles.pickerCard}>
             <ThemedText
