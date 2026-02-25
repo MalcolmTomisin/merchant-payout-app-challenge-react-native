@@ -1,10 +1,30 @@
 import ExpoModulesCore
+import UIKit
 
 public class ScreenSecurityModule: Module {
   var authenticator: BiometricAuthenticating = BiometricAuthManager.shared
 
   public func definition() -> ModuleDefinition {
     Name("ScreenSecurity")
+
+    Events("onScreenshotTaken")
+
+    OnStartObserving {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(self.handleScreenshot),
+        name: UIApplication.userDidTakeScreenshotNotification,
+        object: nil
+      )
+    }
+
+    OnStopObserving {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: UIApplication.userDidTakeScreenshotNotification,
+        object: nil
+      )
+    }
 
     AsyncFunction("getDeviceId") { () -> String in
       return DeviceIdentifierManager.shared.getDeviceID()
@@ -20,5 +40,9 @@ public class ScreenSecurityModule: Module {
         }
       }
     }
+  }
+
+  @objc private func handleScreenshot() {
+    sendEvent("onScreenshotTaken", [:])
   }
 }

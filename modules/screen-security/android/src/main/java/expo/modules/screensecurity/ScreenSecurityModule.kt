@@ -1,6 +1,8 @@
 package expo.modules.screensecurity
 
+import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.provider.Settings
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -13,8 +15,25 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.UUID
 
 class ScreenSecurityModule : Module() {
+
+  private var screenCaptureCallback: Any? = null
+
   override fun definition() = ModuleDefinition {
     Name("ScreenSecurity")
+
+    Events("onScreenshotTaken")
+
+    OnStartObserving {
+      registerScreenCaptureCallback()
+    }
+
+    OnStopObserving {
+      unregisterScreenCaptureCallback()
+    }
+
+    OnDestroy {
+      unregisterScreenCaptureCallback()
+    }
 
     AsyncFunction("getDeviceId") {
       val context = appContext.reactContext ?: throw CodedException("CONTEXT_ERROR", "Application context is not available", null)
@@ -90,6 +109,29 @@ class ScreenSecurityModule : Module() {
 
         biometricPrompt.authenticate(promptInfo)
       }
+    }
+  }
+
+  private fun registerScreenCaptureCallback() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      val activity = appContext.currentActivity ?: return
+      val callback = Activity.ScreenCaptureCallback {
+        sendEvent("onScreenshotTaken", mapOf<String, Any>())
+      }
+      screenCaptureCallback = callback
+      activity.registerScreenCaptureCallback(
+        ContextCompat.getMainExecutor(activity),
+        callback
+      )
+    }
+  }
+
+  private fun unregisterScreenCaptureCallback() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+      val activity = appContext.currentActivity ?: return
+      val callback = screenCaptureCallback as? Activity.ScreenCaptureCallback ?: return
+      activity.unregisterScreenCaptureCallback(callback)
+      screenCaptureCallback = null
     }
   }
 }

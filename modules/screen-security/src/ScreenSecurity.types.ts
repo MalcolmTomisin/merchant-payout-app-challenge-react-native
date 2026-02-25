@@ -1,1 +1,3 @@
-export type ScreenSecurityModuleEvents = {};
+export type ScreenSecurityModuleEvents = {
+  onScreenshotTaken: () => void;
+};
