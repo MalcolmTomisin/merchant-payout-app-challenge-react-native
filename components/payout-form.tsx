@@ -16,6 +16,8 @@ import { ThemedText } from "@/components/themed-text";
 import { usePayoutForm } from "@/hooks/use-payout-form";
 import { useModal } from "@/hooks/use-modal";
 import { useFormInputColors } from "@/hooks/use-form-input-colors";
+import { Spacing, FontSizes, BorderRadius } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { Currency } from "@/types/api";
 
 const CURRENCIES: Currency[] = ["GBP", "EUR"];
@@ -231,28 +233,28 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 24,
+    paddingBottom: scale(Spacing.section),
   },
   amountRow: {
     flexDirection: "row",
-    gap: 12,
-    marginBottom: 24,
+    gap: scale(Spacing.content),
+    marginBottom: scale(Spacing.section),
   },
   amountField: {
     flex: 1,
   },
   currencyField: {
-    width: 120,
+    width: scale(120),
   },
   fieldLabel: {
-    marginBottom: 8,
+    marginBottom: scale(Spacing.compact),
   },
   input: {
     borderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
+    borderRadius: scale(BorderRadius.medium),
+    paddingHorizontal: scale(Spacing.base),
+    paddingVertical: scale(Spacing.element),
+    fontSize: moderateScale(FontSizes.body),
   },
   currencyPicker: {
     flexDirection: "row",
@@ -260,31 +262,31 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   currencyText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: "500",
   },
   chevron: {
-    fontSize: 12,
-    marginLeft: 8,
+    fontSize: moderateScale(FontSizes.xs),
+    marginLeft: scale(Spacing.compact),
   },
   ibanField: {
-    marginBottom: 32,
+    marginBottom: scale(Spacing.block),
   },
   helperText: {
-    fontSize: 14,
-    marginTop: 8,
+    fontSize: moderateScale(FontSizes.caption),
+    marginTop: scale(Spacing.compact),
   },
   confirmButton: {
     backgroundColor: "#0a7ea4",
-    paddingVertical: 18,
-    borderRadius: 12,
+    paddingVertical: scale(Spacing.element + Spacing.tight),
+    borderRadius: scale(BorderRadius.medium),
     alignItems: "center",
   },
   confirmButtonDisabled: {
     backgroundColor: "#D1D5DB",
   },
   confirmButtonText: {
-    fontSize: 18,
+    fontSize: moderateScale(FontSizes.lg),
     fontWeight: "600",
   },
   // Currency picker modal
@@ -293,30 +295,30 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.4)",
     justifyContent: "center",
     alignItems: "center",
-    padding: 24,
+    padding: scale(Spacing.section),
   },
   pickerCard: {
     backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: scale(BorderRadius.large),
+    padding: scale(Spacing.section),
     width: "100%",
     maxWidth: 300,
   },
   pickerTitle: {
     textAlign: "center",
-    marginBottom: 16,
-    fontSize: 18,
+    marginBottom: scale(Spacing.base),
+    fontSize: moderateScale(FontSizes.lg),
   },
   pickerOption: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: scale(Spacing.element),
+    paddingHorizontal: scale(Spacing.base),
+    borderRadius: scale(BorderRadius.small),
   },
   pickerOptionSelected: {
     backgroundColor: "#E8F4F8",
   },
   pickerOptionText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     textAlign: "center",
   },
   pickerOptionTextSelected: {

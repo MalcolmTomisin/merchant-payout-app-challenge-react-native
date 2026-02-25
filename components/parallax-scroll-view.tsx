@@ -10,6 +10,8 @@ import Animated, {
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing } from '@/constants/design-tokens';
+import { scale } from '@/utils/scale';
 
 const HEADER_HEIGHT = 250;
 
@@ -72,8 +74,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 32,
-    gap: 16,
+    padding: scale(Spacing.block),
+    gap: scale(Spacing.base),
     overflow: 'hidden',
   },
 });

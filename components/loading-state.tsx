@@ -6,6 +6,8 @@ import { ActivityIndicator, StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing, FontSizes } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 
 interface LoadingStateProps {
   /** Optional message displayed below the spinner */
@@ -32,11 +34,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: scale(Spacing.base),
   },
   message: {
-    marginTop: 12,
-    fontSize: 14,
+    marginTop: scale(Spacing.content),
+    fontSize: moderateScale(FontSizes.caption),
     opacity: 0.7,
   },
 });

@@ -3,6 +3,8 @@ import { FlatList, StyleSheet, ActivityIndicator, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { TransactionRow } from "@/components/transaction-row";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { Spacing, FontSizes } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { ActivityItem } from "@/types/api";
 
 interface TransactionListProps {
@@ -66,6 +68,6 @@ export function TransactionList({
 }
 
 const styles = StyleSheet.create({
-  footer: { paddingVertical: 20, alignItems: "center" },
-  loadingMoreText: { marginTop: 8, fontSize: 14, opacity: 0.6 },
+  footer: { paddingVertical: scale(20), alignItems: "center" },
+  loadingMoreText: { marginTop: scale(Spacing.compact), fontSize: moderateScale(FontSizes.caption), opacity: 0.6 },
 });

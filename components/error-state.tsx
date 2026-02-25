@@ -6,6 +6,8 @@ import { Pressable, StyleSheet } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing, FontSizes, BorderRadius } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 
 interface ErrorStateProps {
   /** Callback invoked when the user taps Retry */
@@ -39,21 +41,21 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: scale(Spacing.base),
   },
   errorText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: scale(Spacing.base),
   },
   retryButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: scale(Spacing.section),
+    paddingVertical: scale(Spacing.content),
+    borderRadius: scale(BorderRadius.small),
   },
   retryText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
 });

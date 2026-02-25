@@ -7,6 +7,8 @@ import { ThemedText } from '@/components/themed-text';
 import { formatCurrency } from '@/utils/format-currency';
 import { formatDate } from '@/utils/format-date';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing, FontSizes } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { ActivityItem } from '@/types/api';
 
 interface TransactionRowProps {
@@ -66,8 +68,8 @@ export function TransactionRow({ item, showSeparator = true }: TransactionRowPro
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: scale(Spacing.element),
+    paddingHorizontal: scale(Spacing.base),
   },
   row: {
     flexDirection: 'row',
@@ -75,36 +77,36 @@ const styles = StyleSheet.create({
   },
   leftColumn: {
     flex: 1,
-    marginRight: 16,
+    marginRight: scale(Spacing.base),
   },
   rightColumn: {
     alignItems: 'flex-end',
   },
   type: {
-    fontSize: 16,
-    marginBottom: 2,
+    fontSize: moderateScale(FontSizes.body),
+    marginBottom: scale(Spacing.hairline),
   },
   description: {
-    fontSize: 14,
+    fontSize: moderateScale(FontSizes.caption),
     opacity: 0.8,
-    marginBottom: 2,
+    marginBottom: scale(Spacing.hairline),
   },
   date: {
-    fontSize: 13,
+    fontSize: moderateScale(FontSizes.small),
     opacity: 0.5,
   },
   amount: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: scale(Spacing.hairline),
   },
   status: {
-    fontSize: 13,
+    fontSize: moderateScale(FontSizes.small),
     opacity: 0.5,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    marginTop: 14,
+    marginTop: scale(Spacing.element),
     opacity: 0.3,
   },
 });

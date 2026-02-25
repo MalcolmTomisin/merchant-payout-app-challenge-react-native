@@ -6,6 +6,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { formatCurrency } from '@/utils/format-currency';
+import { Spacing, FontSizes, BorderRadius, LineHeights } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { Currency } from '@/types/api';
 
 interface PayoutResultProps {
@@ -89,44 +91,44 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: scale(Spacing.section),
   },
   content: {
     alignItems: 'center',
     maxWidth: 320,
   },
   iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: scale(72),
+    height: scale(72),
+    borderRadius: scale(36),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: scale(Spacing.section),
   },
   iconText: {
-    fontSize: 36,
+    fontSize: moderateScale(FontSizes.icon),
     fontWeight: 'bold',
   },
   title: {
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: scale(Spacing.base),
   },
   message: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
+    lineHeight: moderateScale(LineHeights.body),
+    marginBottom: scale(Spacing.block),
   },
   actionButton: {
     backgroundColor: '#0a7ea4',
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 12,
-    minWidth: 240,
+    paddingVertical: scale(Spacing.base),
+    paddingHorizontal: scale(Spacing.block),
+    borderRadius: scale(BorderRadius.medium),
+    minWidth: scale(240),
     alignItems: 'center',
   },
   actionText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
 });

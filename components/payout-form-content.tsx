@@ -3,6 +3,8 @@ import { StyleSheet } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { Spacing } from '@/constants/design-tokens';
+import { scale } from '@/utils/scale';
 
 export function PayoutFormContent({
   title,
@@ -29,9 +31,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 16,
+    padding: scale(Spacing.base),
   },
   header: {
-    marginBottom: 24,
+    marginBottom: scale(Spacing.section),
   },
 });

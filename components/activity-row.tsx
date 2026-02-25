@@ -6,6 +6,8 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { formatCurrency } from '@/utils/format-currency';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing, FontSizes } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { ActivityItem } from '@/types/api';
 
 interface ActivityRowProps {
@@ -45,7 +47,7 @@ export function ActivityRow({ item, showSeparator = true }: ActivityRowProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
+    paddingVertical: scale(Spacing.content),
   },
   row: {
     flexDirection: 'row',
@@ -54,16 +56,16 @@ const styles = StyleSheet.create({
   },
   description: {
     flex: 1,
-    marginRight: 16,
-    fontSize: 16,
+    marginRight: scale(Spacing.base),
+    fontSize: moderateScale(FontSizes.body),
   },
   amount: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    marginTop: 12,
+    marginTop: scale(Spacing.content),
     opacity: 0.3,
   },
 });

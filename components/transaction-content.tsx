@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { Spacing, FontSizes } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 
 interface TransactionContentProps {
   onDismiss: () => void;
@@ -45,9 +47,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: scale(Spacing.base),
+    paddingVertical: scale(Spacing.element),
   },
-  doneText: { fontSize: 17, fontWeight: "600" },
+  doneText: { fontSize: moderateScale(FontSizes.body), fontWeight: "600" },
   headerSeparator: { height: StyleSheet.hairlineWidth, opacity: 0.3 },
 });

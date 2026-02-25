@@ -7,6 +7,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BalanceCard } from '@/components/balance-card';
 import { ActivityRow } from '@/components/activity-row';
+import { Spacing, FontSizes, BorderRadius } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { MerchantDataResponse, ActivityItem } from '@/types/api';
 
 const RECENT_ACTIVITY_COUNT = 3;
@@ -68,24 +70,24 @@ export function MerchantOverview({ data, onShowMore }: MerchantOverviewProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: scale(Spacing.base),
   },
   header: {
-    marginBottom: 24,
+    marginBottom: scale(Spacing.section),
   },
   section: {
-    marginBottom: 12,
+    marginBottom: scale(Spacing.content),
   },
   showMoreButton: {
-    marginTop: 16,
-    paddingVertical: 14,
-    borderRadius: 8,
+    marginTop: scale(Spacing.base),
+    paddingVertical: scale(Spacing.element),
+    borderRadius: scale(BorderRadius.small),
     backgroundColor: '#d4eaf7',
     alignItems: 'center',
   },
   showMoreText: {
     color: '#0a7ea4',
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
 });

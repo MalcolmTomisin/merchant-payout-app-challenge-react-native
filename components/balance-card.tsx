@@ -5,6 +5,8 @@ import { StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { formatCurrency } from '@/utils/format-currency';
+import { Spacing, FontSizes, BorderRadius } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { Currency } from '@/types/api';
 
 interface BalanceCardProps {
@@ -45,23 +47,23 @@ export function BalanceCard({ availableBalance, pendingBalance, currency }: Bala
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
+    padding: scale(Spacing.base),
+    borderRadius: scale(BorderRadius.medium),
+    marginBottom: scale(Spacing.section),
   },
   row: {
     flexDirection: 'row',
-    marginTop: 12,
+    marginTop: scale(Spacing.content),
   },
   column: {
     flex: 1,
   },
   label: {
-    fontSize: 14,
+    fontSize: moderateScale(FontSizes.caption),
     opacity: 0.6,
-    marginBottom: 4,
+    marginBottom: scale(Spacing.tight),
   },
   amount: {
-    fontSize: 22,
+    fontSize: moderateScale(FontSizes.xl),
   },
 });

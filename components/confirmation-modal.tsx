@@ -12,6 +12,8 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { formatCurrency } from '@/utils/format-currency';
 import { maskIban } from '@/utils/mask-iban';
+import { Spacing, FontSizes, BorderRadius } from '@/constants/design-tokens';
+import { scale, moderateScale } from '@/utils/scale';
 import type { Currency } from '@/types/api';
 
 interface ConfirmationModalProps {
@@ -141,42 +143,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 24,
+    padding: scale(Spacing.section),
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: scale(BorderRadius.large),
+    padding: scale(Spacing.section),
     width: '100%',
     maxWidth: 400,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: scale(Spacing.section),
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: scale(Spacing.content),
   },
   label: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
   },
   value: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
   ibanLabel: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     flexShrink: 0,
   },
   ibanValue: {
-    fontSize: 14,
+    fontSize: moderateScale(FontSizes.caption),
     fontWeight: '700',
     flex: 1,
     textAlign: 'right',
-    marginLeft: 4,
+    marginLeft: scale(Spacing.tight),
   },
   divider: {
     height: StyleSheet.hairlineWidth,
@@ -184,32 +186,32 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: 'row',
-    gap: 12,
-    marginTop: 20,
+    gap: scale(Spacing.content),
+    marginTop: scale(20),
   },
   cancelButton: {
     flex: 1,
     backgroundColor: '#F0F0F0',
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: scale(Spacing.base),
+    borderRadius: scale(BorderRadius.medium),
     alignItems: 'center',
   },
   confirmButton: {
     flex: 1,
     backgroundColor: '#0a7ea4',
-    paddingVertical: 16,
-    borderRadius: 12,
+    paddingVertical: scale(Spacing.base),
+    borderRadius: scale(BorderRadius.medium),
     alignItems: 'center',
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   cancelText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
   confirmText: {
-    fontSize: 16,
+    fontSize: moderateScale(FontSizes.body),
     fontWeight: '600',
   },
 });
