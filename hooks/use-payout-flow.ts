@@ -1,6 +1,7 @@
 import { useReducer } from "react";
 import { useCreatePayout } from "@/hooks/use-create-payout";
 import type { Currency } from "@/types/api";
+import * as ScreenSecurity from "@/modules/screen-security";
 
 export interface PendingPayout {
   amount: number; // in pence/cents
@@ -81,7 +82,8 @@ export function usePayoutFlow() {
     if (!pendingPayout) return;
 
     try {
-      await mutation.mutateAsync(pendingPayout);
+      const device_id = await ScreenSecurity.getDeviceIdAsync();
+      await mutation.mutateAsync({ ...pendingPayout, device_id });
     } finally {
       dispatch({ type: "CONFIRM_SETTLED" });
     }
