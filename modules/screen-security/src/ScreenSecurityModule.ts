@@ -3,9 +3,7 @@ import { NativeModule, requireNativeModule } from 'expo';
 import { ScreenSecurityModuleEvents } from './ScreenSecurity.types';
 
 declare class ScreenSecurityModule extends NativeModule<ScreenSecurityModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
+  getDeviceId(): Promise<string>;
 }
 
 // This call loads the native module object from the JSI.
