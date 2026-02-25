@@ -102,24 +102,7 @@ export function usePayoutFlow() {
 
     // Biometric authentication for high-value payouts
     if (pendingPayout.amount > BIOMETRIC_THRESHOLD) {
-      try {
-        const authenticated =
-          await ScreenSecurity.isBiometricAuthenticatedAsync();
-        if (!authenticated) {
-          dispatch({
-            type: "BIOMETRIC_FAILED",
-            payload: "Biometric authentication failed. Please try again.",
-          });
-          return;
-        }
-      } catch (error: unknown) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Biometric authentication failed. Please try again.";
-        dispatch({ type: "BIOMETRIC_FAILED", payload: message });
-        return;
-      }
+      await handleBiometricAuthentication();
     }
 
     try {
@@ -129,6 +112,27 @@ export function usePayoutFlow() {
       // Error state is captured by React Query (mutation.isError)
     } finally {
       dispatch({ type: "CONFIRM_SETTLED" });
+    }
+  };
+
+  const handleBiometricAuthentication = async () => {
+    try {
+      const authenticated =
+        await ScreenSecurity.isBiometricAuthenticatedAsync();
+      if (!authenticated) {
+        dispatch({
+          type: "BIOMETRIC_FAILED",
+          payload: "Biometric authentication failed. Please try again.",
+        });
+        return;
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Biometric authentication failed. Please try again.";
+      dispatch({ type: "BIOMETRIC_FAILED", payload: message });
+      return;
     }
   };
 
