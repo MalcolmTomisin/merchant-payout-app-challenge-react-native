@@ -84,6 +84,8 @@ export function usePayoutFlow() {
     try {
       const device_id = await ScreenSecurity.getDeviceIdAsync();
       await mutation.mutateAsync({ ...pendingPayout, device_id });
+    } catch {
+      // Error state is captured by React Query (mutation.isError)
     } finally {
       dispatch({ type: "CONFIRM_SETTLED" });
     }
