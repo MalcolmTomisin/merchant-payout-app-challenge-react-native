@@ -1,11 +1,9 @@
-import { useEffect } from "react";
-import { Alert } from "react-native";
 import { PayoutForm } from "@/components/payout-form";
 import { ConfirmationModal } from "@/components/confirmation-modal";
 import { PayoutResult } from "@/components/payout-result";
 import { usePayoutFlow } from "@/hooks/use-payout-flow";
+import { useScreenshotListener } from "@/hooks/use-screenshot-listener";
 import { PayoutFormContent } from "@/components/payout-form-content";
-import { addScreenshotListener } from "@/modules/screen-security";
 
 export default function PayoutsScreen() {
   const {
@@ -24,15 +22,7 @@ export default function PayoutsScreen() {
     handleTryAgain,
   } = usePayoutFlow();
 
-  useEffect(() => {
-    const subscription = addScreenshotListener(() => {
-      Alert.alert(
-        "Security Reminder",
-        "Please keep your financial data private. Screenshots may contain sensitive information."
-      );
-    });
-    return () => subscription.remove();
-  }, []);
+  useScreenshotListener();
 
   if (isSuccess) {
     return (
