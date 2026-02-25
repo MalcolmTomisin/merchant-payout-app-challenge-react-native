@@ -7,6 +7,8 @@ import HomeScreen from '../index';
 
 jest.mock('@/modules/screen-security', () => ({
   getDeviceIdAsync: jest.fn().mockResolvedValue('mock-device-id'),
+  addScreenshotListener: jest.fn().mockReturnValue({ remove: jest.fn() }),
+  isBiometricAuthenticatedAsync: jest.fn().mockResolvedValue(true),
 }));
 
 function createWrapper() {
