@@ -6,9 +6,12 @@ import * as ScreenSecurity from '@/modules/screen-security';
 
 jest.mock('@/modules/screen-security', () => ({
   getDeviceIdAsync: jest.fn().mockResolvedValue('mock-device-id'),
+  isBiometricAuthenticatedAsync: jest.fn().mockResolvedValue(true),
 }));
 
 const mockedGetDeviceIdAsync = ScreenSecurity.getDeviceIdAsync as jest.Mock;
+const mockedIsBiometricAuthenticated =
+  (ScreenSecurity as any).isBiometricAuthenticatedAsync as jest.Mock;
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -42,6 +45,8 @@ describe('usePayoutFlow', () => {
   beforeEach(() => {
     mockedGetDeviceIdAsync.mockClear();
     mockedGetDeviceIdAsync.mockResolvedValue('mock-device-id');
+    mockedIsBiometricAuthenticated.mockClear();
+    mockedIsBiometricAuthenticated.mockResolvedValue(true);
   });
 
   it('returns correct initial state', () => {
@@ -337,5 +342,200 @@ describe('usePayoutFlow', () => {
     );
 
     expect(mockedGetDeviceIdAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips biometric check for payouts at or below threshold', async () => {
+    const belowThresholdPayout: PendingPayout = {
+      amount: 100000, // exactly 1,000.00 — not "over"
+      currency: 'GBP',
+      iban: 'GB29NWBK60161331926819',
+    };
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(belowThresholdPayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    await waitFor(
+      () => {
+        expect(result.current.isSuccess).toBe(true);
+      },
+      { timeout: 10000 },
+    );
+
+    expect(mockedIsBiometricAuthenticated).not.toHaveBeenCalled();
+    expect(mockedGetDeviceIdAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('triggers biometric check for payouts over threshold and proceeds on success', async () => {
+    const highValuePayout: PendingPayout = {
+      amount: 100001, // over 1,000.00
+      currency: 'GBP',
+      iban: 'GB29NWBK60161331926819',
+    };
+
+    mockedIsBiometricAuthenticated.mockResolvedValue(true);
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(highValuePayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    await waitFor(
+      () => {
+        expect(result.current.isSuccess).toBe(true);
+      },
+      { timeout: 10000 },
+    );
+
+    expect(mockedIsBiometricAuthenticated).toHaveBeenCalledTimes(1);
+    expect(mockedGetDeviceIdAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows error when biometric authentication is cancelled', async () => {
+    const highValuePayout: PendingPayout = {
+      amount: 200000,
+      currency: 'GBP',
+      iban: 'GB29NWBK60161331926819',
+    };
+
+    mockedIsBiometricAuthenticated.mockRejectedValue(
+      new Error('Biometric authentication was cancelled.'),
+    );
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(highValuePayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.errorMessage).toBe(
+      'Biometric authentication was cancelled.',
+    );
+    expect(result.current.showConfirmation).toBe(false);
+    expect(result.current.title).toBe('Payout');
+    // API call should NOT have been made
+    expect(mockedGetDeviceIdAsync).not.toHaveBeenCalled();
+  });
+
+  it('shows error when biometrics are not enrolled', async () => {
+    const highValuePayout: PendingPayout = {
+      amount: 150000,
+      currency: 'EUR',
+      iban: 'FR1212345123451234567A12310131231231231',
+    };
+
+    mockedIsBiometricAuthenticated.mockRejectedValue(
+      new Error(
+        'Biometric authentication is not set up. Please enable it in Settings.',
+      ),
+    );
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(highValuePayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.errorMessage).toBe(
+      'Biometric authentication is not set up. Please enable it in Settings.',
+    );
+    expect(mockedGetDeviceIdAsync).not.toHaveBeenCalled();
+  });
+
+  it('clears biometric error on try again', async () => {
+    const highValuePayout: PendingPayout = {
+      amount: 200000,
+      currency: 'GBP',
+      iban: 'GB29NWBK60161331926819',
+    };
+
+    mockedIsBiometricAuthenticated.mockRejectedValue(
+      new Error('Biometric authentication was cancelled.'),
+    );
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(highValuePayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.errorMessage).toBe(
+      'Biometric authentication was cancelled.',
+    );
+
+    act(() => {
+      result.current.handleTryAgain();
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(false);
+    });
+
+    expect(result.current.errorMessage).toBeUndefined();
+    expect(result.current.title).toBe('Send Payout');
+  });
+
+  it('aborts payout when biometric returns false', async () => {
+    const highValuePayout: PendingPayout = {
+      amount: 200000,
+      currency: 'GBP',
+      iban: 'GB29NWBK60161331926819',
+    };
+
+    mockedIsBiometricAuthenticated.mockResolvedValue(false);
+
+    const { result } = renderHook(() => usePayoutFlow(), {
+      wrapper: createWrapper(),
+    });
+
+    act(() => {
+      result.current.handleFormSubmit(highValuePayout);
+    });
+
+    await act(async () => {
+      await result.current.handleConfirmPayout();
+    });
+
+    expect(result.current.isError).toBe(true);
+    expect(result.current.errorMessage).toBe(
+      'Biometric authentication failed. Please try again.',
+    );
+    expect(mockedGetDeviceIdAsync).not.toHaveBeenCalled();
   });
 });
