@@ -102,7 +102,8 @@ export function usePayoutFlow() {
 
     // Biometric authentication for high-value payouts
     if (pendingPayout.amount > BIOMETRIC_THRESHOLD) {
-      await handleBiometricAuthentication();
+      const failed = await handleBiometricAuthentication();
+      if (failed) return;
     }
 
     try {
@@ -124,7 +125,7 @@ export function usePayoutFlow() {
           type: "BIOMETRIC_FAILED",
           payload: "Biometric authentication failed. Please try again.",
         });
-        return;
+        return true;
       }
     } catch (error: unknown) {
       const message =
@@ -132,7 +133,7 @@ export function usePayoutFlow() {
           ? error.message
           : "Biometric authentication failed. Please try again.";
       dispatch({ type: "BIOMETRIC_FAILED", payload: message });
-      return;
+      return true;
     }
   };
 
