@@ -7,3 +7,8 @@ export async function getDeviceIdAsync(): Promise<string> {
   const ScreenSecurityModule = await import('./src/ScreenSecurityModule');
   return ScreenSecurityModule.default.getDeviceId();
 }
+
+export async function isBiometricAuthenticatedAsync(): Promise<boolean> {
+  const ScreenSecurityModule = await import('./src/ScreenSecurityModule');
+  return ScreenSecurityModule.default.isBiometricAuthenticated();
+}

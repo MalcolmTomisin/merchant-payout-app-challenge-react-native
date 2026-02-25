@@ -4,6 +4,7 @@ import { ScreenSecurityModuleEvents } from './ScreenSecurity.types';
 
 declare class ScreenSecurityModule extends NativeModule<ScreenSecurityModuleEvents> {
   getDeviceId(): Promise<string>;
+  isBiometricAuthenticated(): Promise<boolean>;
 }
 
 // This call loads the native module object from the JSI.

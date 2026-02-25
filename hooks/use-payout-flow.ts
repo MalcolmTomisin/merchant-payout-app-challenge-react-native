@@ -3,6 +3,9 @@ import { useCreatePayout } from "@/hooks/use-create-payout";
 import type { Currency } from "@/types/api";
 import * as ScreenSecurity from "@/modules/screen-security";
 
+/** Threshold in lowest denomination (pence/cents). Payouts over 1,000.00 require biometrics. */
+const BIOMETRIC_THRESHOLD = 100000;
+
 export interface PendingPayout {
   amount: number; // in pence/cents
   currency: Currency;
@@ -13,18 +16,22 @@ interface PayoutFlowState {
   showConfirmation: boolean;
   pendingPayout: PendingPayout | null;
   formKey: number;
+  biometricError: string | null;
 }
 
 type PayoutFlowAction =
   | { type: "SUBMIT_FORM"; payload: PendingPayout }
   | { type: "CANCEL_CONFIRMATION" }
   | { type: "CONFIRM_SETTLED" }
-  | { type: "RESET_FORM" };
+  | { type: "RESET_FORM" }
+  | { type: "BIOMETRIC_FAILED"; payload: string }
+  | { type: "CLEAR_BIOMETRIC_ERROR" };
 
 const initialState: PayoutFlowState = {
   showConfirmation: false,
   pendingPayout: null,
   formKey: 0,
+  biometricError: null,
 };
 
 function payoutFlowReducer(
@@ -53,6 +60,18 @@ function payoutFlowReducer(
         ...state,
         pendingPayout: null,
         formKey: state.formKey + 1,
+        biometricError: null,
+      };
+    case "BIOMETRIC_FAILED":
+      return {
+        ...state,
+        showConfirmation: false,
+        biometricError: action.payload,
+      };
+    case "CLEAR_BIOMETRIC_ERROR":
+      return {
+        ...state,
+        biometricError: null,
       };
     default:
       return state;
@@ -81,6 +100,28 @@ export function usePayoutFlow() {
   const handleConfirmPayout = async () => {
     if (!pendingPayout) return;
 
+    // Biometric authentication for high-value payouts
+    if (pendingPayout.amount > BIOMETRIC_THRESHOLD) {
+      try {
+        const authenticated =
+          await ScreenSecurity.isBiometricAuthenticatedAsync();
+        if (!authenticated) {
+          dispatch({
+            type: "BIOMETRIC_FAILED",
+            payload: "Biometric authentication failed. Please try again.",
+          });
+          return;
+        }
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Biometric authentication failed. Please try again.";
+        dispatch({ type: "BIOMETRIC_FAILED", payload: message });
+        return;
+      }
+    }
+
     try {
       const device_id = await ScreenSecurity.getDeviceIdAsync();
       await mutation.mutateAsync({ ...pendingPayout, device_id });
@@ -98,15 +139,18 @@ export function usePayoutFlow() {
 
   const handleTryAgain = () => {
     mutation.reset();
+    dispatch({ type: "CLEAR_BIOMETRIC_ERROR" });
   };
 
   const isSuccess = mutation.isSuccess && mutation.data?.status === "completed";
   const isError =
     mutation.isError ||
-    (mutation.isSuccess && mutation.data?.status === "failed");
+    (mutation.isSuccess && mutation.data?.status === "failed") ||
+    !!state.biometricError;
 
   const errorMessage =
-    mutation.error?.message ??
+    state.biometricError ||
+    mutation.error?.message ||
     (mutation.data?.status === "failed"
       ? "Service temporarily unavailable. Please try again later."
       : undefined);
