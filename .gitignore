@@ -64,3 +64,4 @@ expo-env.d.ts
 
 /ios/
 /android/
+modules/screen-security/android/build/

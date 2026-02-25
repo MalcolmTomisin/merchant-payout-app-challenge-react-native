@@ -24,7 +24,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.reactnativeinterview"
+      "package": "com.anonymous.reactnativeinterview",
+      "permissions": ["android.permission.DETECT_SCREEN_CAPTURE"]
     },
     "web": {
       "output": "static",
