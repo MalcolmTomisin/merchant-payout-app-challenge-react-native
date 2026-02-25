@@ -37,12 +37,7 @@ class ScreenSecurityModule : Module() {
 
     AsyncFunction("getDeviceId") {
       val context = appContext.reactContext ?: throw CodedException("CONTEXT_ERROR", "Application context is not available", null)
-      val prefs = context.getSharedPreferences("screen_security_prefs", Context.MODE_PRIVATE)
-      var deviceId = prefs.getString("device_id", null)
-      if (deviceId == null) {
-        deviceId = UUID.randomUUID().toString()
-        prefs.edit().putString("device_id", deviceId).apply()
-      }
+      val deviceId = Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
       return@AsyncFunction deviceId
     }
 
